@@ -1,0 +1,102 @@
+---
+title: "Statistics for a data rich world"
+author: "Emily Faul"
+date: "2023-09-12"
+output: html_document
+--- 
+
+
+```{r}
+library(knitr)
+knitr::opts_chunk$set(fig.width=6, fig.height=3.5) 
+```
+
+
+```{r}
+# PROGRAMMING CHALLENGE: Stats Data Rich World
+library(dplyr)
+```
+
+
+```{r}
+# Read the Dataset sheet into “R”. The dataset will be called "data".
+data <- read.csv("https://covid.ourworldindata.org/data/owid-covid-data.csv",
+                 na.strings = "", header=T)
+
+
+```
+
+```{r}
+# Simulating the average daily temperature column for our nonsensical analysis.
+# Assigning random temperature values between -10 and 35 (Celsius) to the new column.
+set.seed(1234)
+data$average_daily_temperature <- runif(nrow(data), -10, 35)
+res <- NULL
+for (i in 1:length(unique(data$date))) {
+  data1 <- data[which((data$date == unique(data$date)[i]) & (data$continent == "Europe")),]
+  data1 <- data1 %>% select("iso_code", "date", "new_cases", "average_daily_temperature")
+  if (sum(rowSums(!is.na(data1[,3:4])) == 2) >= 10) {
+    res <- rbind(res, c(unique(data$date)[i],
+                        cor.test(data1[,3], data1[,4])$estimate,
+                        cor.test(data1[,3], data1[,4])$p.value))
+  }
+}
+res[which((as.numeric(res[,2]) > 0) & (as.numeric(res[,3]) <= 0.05)),]
+```
+
+
+
+
+
+
+
+```{r}
+# Simulating the average daily temperature column for our nonsensical analysis.
+# Assigning random temperature values between -10 and 35 (Celsius) to the new column.
+set.seed(1234)
+data$average_daily_temperature <- runif(nrow(data), -10, 35)
+res <- NULL
+for (i in 1:length(unique(data$date))) {
+  data1 <- data[which((data$date == unique(data$date)[i]) & (data$continent == "Europe")),]
+  data1 <- data1 %>% select("iso_code", "date", "new_cases", "average_daily_temperature")
+  if (sum(rowSums(!is.na(data1[,3:4])) == 2) >= 10) {
+    res <- rbind(res, c(unique(data$date)[i],
+                        cor.test(data1[,3], data1[,4])$estimate,
+                        cor.test(data1[,3], data1[,4])$p.value))
+  }
+}
+res[which((as.numeric(res[,2]) > 0) & (as.numeric(res[,3]) <= 0.05)),] 
+#1st column represents: A unique date.
+#2nd column represents: The estimated correlation coefficient between the two variables (new cases and average daily temperature).
+#3rd column represents: The p-value associated with the correlation test.
+```
+
+
+To demonstrate how data can be "cherry picked" we generated a uniform distribution and generated a list of values between -10 and 35˚C to simulate average daily temperature data. Following statistical analysis we found on multiple dates (listed below) average daily temperature values are positively correlated to new COVID cases in Europe.  
+
+*First ten dates generated show significant correlation. 
+
+ [1,] "2020-03-27" "0.283349810738522" "0.0439195033699029" 
+ [2,] "2020-09-09" "0.283560998528383" "0.043755574450734"  
+ [3,] "2020-10-24" "0.281729177478701" "0.0451942674483055" 
+ [4,] "2020-11-28" "0.310802610790601" "0.0264293749046018" 
+ [5,] "2021-04-01" "0.314722691341704" "0.0244904617628498" 
+ [6,] "2021-04-15" "0.29398371143264"  "0.0362659730622546" 
+ [7,] "2021-08-21" "0.277315088031726" "0.048820224619938"  
+ [8,] "2021-10-02" "0.322815724561232" "0.0208632792934312" 
+ [9,] "2021-12-05" "0.278494210356606" "0.0478292321606055" 
+[10,] "2022-02-15" "0.286350952123346" "0.0416365542255234" 
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
